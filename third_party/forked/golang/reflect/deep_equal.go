@@ -252,10 +252,17 @@ func (e Equalities) deepValueEqual(v1, v2 reflect.Value, visited map[visit]bool,
 		// Can't do better than this:
 		return false
 	default:
-		// Normal equality suffices
 		if !v1.CanInterface() || !v2.CanInterface() {
-			panic(unexportedTypePanic{})
+			// panic(unexportedTypePanic{})
+			// do not panic for unexported fields
+			// if we are checking deep equality and we cannot interface then we have scalar values
+			// we can ignore these unexported scalars
+			// this means that only exported values are considered for deep equality
+			// which for the purposes of the controller-runtime is enough
+			// the unexported values are related to grpc bookkeeping rather than representing entity state
+			return true
 		}
+		// Normal equality suffices
 		return v1.Interface() == v2.Interface()
 	}
 }
@@ -408,10 +415,17 @@ func (e Equalities) deepValueDerive(v1, v2 reflect.Value, visited map[visit]bool
 		// Can't do better than this:
 		return false
 	default:
-		// Normal equality suffices
 		if !v1.CanInterface() || !v2.CanInterface() {
-			panic(unexportedTypePanic{})
+			// panic(unexportedTypePanic{})
+			// do not panic for unexported fields
+			// if we are checking deep equality and we cannot interface then we have scalar values
+			// we can ignore these unexported scalars
+			// this means that only exported values are considered for deep equality
+			// which for the purposes of the controller-runtime is enough
+			// the unexported values are related to grpc bookkeeping rather than representing entity state
+			return true
 		}
+		// Normal equality suffices
 		return v1.Interface() == v2.Interface()
 	}
 }
