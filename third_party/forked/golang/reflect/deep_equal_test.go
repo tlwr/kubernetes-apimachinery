@@ -98,6 +98,36 @@ func TestEqualities(t *testing.T) {
 	}
 }
 
+func TestPublicEqualities(t *testing.T) {
+	e := Equalities{}
+
+	type Foo struct {
+		X int
+		y int
+	}
+
+	variantA := Foo{1, 2}
+	variantB := Foo{2, 2}
+	variantC := Foo{2, 2}
+
+	if e.PublicDeepEqual(variantA, variantB) {
+		t.Errorf("[PublicDeepEqual] Expected %v to not be equal to %v but was not", variantA, variantB)
+	}
+
+	if !e.PublicDeepEqual(variantB, variantC) {
+		t.Errorf("[PublicDeepEqual] Expected %v to be equal to %v but was not", variantB, variantC)
+	}
+
+	defer func() {
+		r := recover()
+		if r == nil {
+			t.Errorf("[DeepEqual] did not panic but should have")
+		}
+	}()
+
+	e.DeepEqual(variantB, variantC)
+}
+
 func TestDerivatives(t *testing.T) {
 	e := Equalities{}
 	type Bar struct {
